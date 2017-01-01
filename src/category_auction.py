@@ -2,10 +2,10 @@ import requests
 import re
 from lxml import html
 
-response = requests.get('http://script.auction.co.kr/common/HeaderCategoryInfo.js?_=1482923172564')
+response = requests.get('http://script.auction.co.kr/common/HeaderCategoryInfo.js')
 
 assert response.status_code == 200
-
+print("****옥션 카테고리****")
 #print(response.content)
 pattern = "HeaderCategoryT\('\d{2}0{6}', '.*'"
 #hash table 3번째 트리부터 탐색
