@@ -6,6 +6,7 @@ response = requests.get('http://www.11st.co.kr/html/inc_footer_data.js')
 
 assert response.status_code == 200
 
+print("****11번가 카테고리****")
 #print(response.content)
 pattern = """("CtgrLv":3,"RefCtgrNo":\d+)"""
 #카테고리 레벨 3인것만 골라내기
