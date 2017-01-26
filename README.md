@@ -220,3 +220,4 @@ storefarm과 마찬가지로 webdriver를 사용하지 않음
    else:
        print('login failed!')
    ```
+
