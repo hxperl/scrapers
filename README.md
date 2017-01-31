@@ -40,16 +40,7 @@
   실행방법: python3 category_gmarket.py
   ```
 
-## 인터파크 카테고리 목록
 
-- ```
-  출력 내용 : 인터파크 최하위 카테고리까지 목록 출력
-  구현 언어 : python
-  사용된 library - REQUESTS, RE, HTML.lxml
-  구현 방식 : xpath selector로 html내 태그를 찾아서 나열하는 방식과
-  			정규식으로 카테고리목록 패턴을 찾아서 나열하는 방식
-  실행방법 : python3 category_interpark.py
-  ```
 
 # 판매자용 신규 주문 목록 scraping
 
