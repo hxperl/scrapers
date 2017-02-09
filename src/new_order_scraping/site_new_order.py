@@ -11,19 +11,6 @@ class SiteNewOrder:
         self._id = _id
         self._password = _password
 
-    def getNewOrderNum(self):                   # pass
-        pass
-
-    def logOn(self):                            # pass
-        pass
-
-    def neverGiveUp(self, fn):                  # 성공할때까지 계속 시도
-        while True:
-            try:
-                return fn()
-            except Exception as e:
-                pass
-
     # element에 backspace 키를 여러번 설정하고 ActionChains에 저장
     def sendBackspace(self, element, i, act):
         for j in range(i):

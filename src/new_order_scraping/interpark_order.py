@@ -12,7 +12,6 @@ class InterparkOrder(SiteNewOrder):
         SiteNewOrder.driverQuit(self)                   # webdriver는 사용하지 않음
 
     def logOn(self):                                    # 로그인 성공시 True, 실패시 False 리턴
-        SiteNewOrder.logOn(self)
         payload = {                                     # post 요청에 필요한 data form
             "sc.memId": self._id,
             "sc.pwd": self._password,
@@ -57,6 +56,3 @@ class InterparkOrder(SiteNewOrder):
         result = r.json()                               # json 파싱
         # bs 키값 안의 리스트 길이를 구하고 리턴
         return len(result['bs'])
-
-    def postTo(self, url, site_name, num):
-        SiteNewOrder.postTo(self, url, site_name, num)

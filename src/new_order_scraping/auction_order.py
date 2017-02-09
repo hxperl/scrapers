@@ -22,7 +22,6 @@ class AuctionOrder(SiteNewOrder):
         SiteNewOrder.__init__(self, _id, _password)
 
     def logOn(self):                                    # 로그인 성공할시에 True 리턴 , 실패하면  False
-        SiteNewOrder.logOn(self)
         self.driver.get(
             "https://www.esmplus.com/Member/SignIn/LogOn")      # 로그인 페이지
         options = self.driver.find_elements_by_id(
@@ -54,19 +53,19 @@ class AuctionOrder(SiteNewOrder):
         try:
             title = WebDriverWait(self.driver, 5).until(
                 EC.title_is('ESM Plus - Home'))     # 메인 타이틀이 로딩 될 때까지 기다림
-            newOrder = self.neverGiveUp(lambda: self.driver.find_element_by_xpath(
-                "//p[@class='title1']/a"))    # '신규주문' 버튼을 찾음
+            newOrder = WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, "//p[@class='title1']/a")))
             if newOrder.text == '신규주문':              # 텍스트값이 '신규주문'이 맞을 경우
                 while self.driver.current_url != 'http://www.esmplus.com/Home/Home#HTDM105':  # 신규 주문 페이지가 로딩 될 때까지
                     newOrder.click()    # '신규주문'클릭
-                self.neverGiveUp(lambda: self.driver.switch_to_frame(
-                    self.driver.find_element_by_name("ifm_TDM105")))  # 신규주문 페이지가 로딩되면 프레임 전환을 성공할 때까지 시도
-            return True         # 이상 없을 경우 True return
+                WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it(
+                    (By.NAME, "ifm_TDM105")))  # switch frame
+            return True         # 이상 없을 경우 return True (means login success)
         except TimeoutException:
-            return False        # 시간 초과시 False return
+            return False        # 시간 초과 or 'login fail' return False
 
     def getNewOrderNum(self):               # 신규 주문 목록 개수 리턴
-        SiteNewOrder.getNewOrderNum(self)
+        n = 0
         try:
             search = WebDriverWait(self.driver, 3).until(
                 EC.presence_of_element_located((By.ID, "btnSearch")))  # 검색 버튼이 위치할때까지 기다렸다가
@@ -78,46 +77,26 @@ class AuctionOrder(SiteNewOrder):
             # 추가 페이지가 있는지 3초간 기다림. 없으면 exception
             for t in range(0, len(pagging) + 1):
                 try:
-                    while True:  # explicit 이 정확하게 작동하지 않을경우
-                        try:
-                            orderedList = WebDriverWait(self.driver, 5).until(
-                                EC.presence_of_all_elements_located((By.XPATH, "//tbody[@class='sb-grid-results']/tr")))
-                            for i in orderedList:
-                                # print('\n')
-                                #new_order_list = self.listAppend(self.new_order_list, i)
-                                for j in i.find_elements_by_xpath('./td'):
-                                    pass
-                                    #print(j.text, " ", end="")
-                                    #new_order_list = self.listAppend(self.new_order_list, j.text, 1)
-                            break
-                        except:     # explicit wait 도 정확하게 불러오지 못할경우 Exception 발생
-                            pass
+                    orderedList = WebDriverWait(self.driver, 5).until(
+                        EC.presence_of_all_elements_located((By.XPATH, "//tbody[@class='sb-grid-results']/tr")))
+                    n += orderedList
                     self.driver.execute_script(
                         "document.getElementsByClassName('paggingnum')[%d].click()" % t)
-                except WebDriverException:  # 클릭할 다음 페이지가 없을 경우
+                except TimeoutException:
+                    print('TimeoutException while loading new ordered list')
+                except WebDriverException:  # unless more page
                     break
+            return n
         except (NoSuchElementException, TimeoutException):  # 추가 페이지가 없을 경우
-            while True:  # explicit 이 정확하게 작동하지 않을 수 있음
-                try:
-                    orderedList = WebDriverWait(self.driver, 10).until(
-                        EC.presence_of_all_elements_located((By.XPATH, "//tbody[@class='sb-grid-results']/tr")))
-                    # 주문 목록 리스트를 받아 orderedList에 저장
-                    for i in orderedList:
-                            # print('\n')
-                            #self.new_order_list = self.listAppend(self.new_order_list, i)
-                        for j in i.find_elements_by_xpath('./td'):
-                            if j.text == '조회된 데이터가 없습니다.':      # 신규 주문목록이 0 이어도 텍스트값이 있어서 1이 리턴되므로 직접 0 리턴
-                                return 0
-                            # else:
-                            #     print(j.text, " ", end="")
-                            #     self.new_order_list = self.listAppend(self.new_order_list, j.text, 1)
-                    break
-                except:     # explicit wait 도 정확하게 불러오지 못할경우 Exception 발생
-                    pass
+            try:
+                orderedList = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located((By.XPATH, "//tbody[@class='sb-grid-results']/tr")))
+                # 주문 목록 리스트를 받아 orderedList에 저장
+                for i in orderedList:
+                    for j in i.find_elements_by_xpath('./td'):
+                        if j.text == '조회된 데이터가 없습니다.':      # 신규 주문목록이 0 이어도 텍스트값이 있어서 1이 리턴되므로 직접 0 리턴
+                            return 0
+
+            except TimeoutException:
+                print('TimeoutException while loading new ordered list')
         return len(orderedList)
-
-    def postTo(self, url, site_name, num):
-        SiteNewOrder.postTo(self, url, site_name, num)
-
-    def driverQuit(self):
-        SiteNewOrder.driverQuit(self)
