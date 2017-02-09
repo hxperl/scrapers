@@ -1,9 +1,8 @@
 import requests
 from lxml import html
-from simple_scraper import SimpleScraper
 
 
-class Woodwick(SimpleScraper):
+class Woodwick():
 
     def keep_search(self, i, _dict):           # 카테고리 탐색 함수 args (html element, dictionary)
         cate_name = i.text              # 카테고리 이름 저장
@@ -26,9 +25,6 @@ class Woodwick(SimpleScraper):
 
         return my_dict   # dict 리턴
 
-    # 카테고리 url을 받아 {'상품명': '상품 url 주소'}리턴
-    # list라 해놓고 dictionary 돌려주는게 좀 이상하긴 하지만
-    #
     def get_product_list(self, url):
         # 추가 페이지에 대한 get요청을 하지 않기 위해 모두보기 옵션으로 get
         r = requests.get(url + "?limit=all")
@@ -37,7 +33,6 @@ class Woodwick(SimpleScraper):
         for i in tree.xpath("//div[@class='product-information']/p"):
             a = i.text.strip()
             url = i.xpath("../h5/a")
-            # 이유는 모르겠는데 업데이트를 하도 힘들게 하고 계시길래
             yield (a, url[0].get('href'))
 
     # 상품 url 주소를 받아서 상세 정보를 dictionary 타입으로 리턴

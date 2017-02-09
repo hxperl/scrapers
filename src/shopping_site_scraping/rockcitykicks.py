@@ -1,10 +1,9 @@
 import requests
 from lxml import html
 from lxml import etree
-from simple_scraper import SimpleScraper
 
 
-class Rockcitykicks(SimpleScraper):
+class Rockcitykicks():
 
     def keep_search(self, i, _dict, full_url=False):
         # 상품관련없는 페이지는 return
